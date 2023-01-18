@@ -17,7 +17,6 @@ public class UserFraudCheckService {
 		audit.setUserId(userId);
 		audit.setFraudCheckResult("audit check is success for user : "+userId);
 		repo.save(audit);
-		System.out.println("Checking fraud for user "+userId);
 		return true;
 	}
 }

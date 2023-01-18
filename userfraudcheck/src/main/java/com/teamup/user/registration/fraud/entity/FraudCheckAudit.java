@@ -1,8 +1,6 @@
 package com.teamup.user.registration.fraud.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +16,7 @@ import lombok.experimental.Accessors;
 //@Table(name = "fraud_check_audit")
 public class FraudCheckAudit {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private @Getter @Setter int id;
 	private @Getter @Setter String userId;
 	private @Getter @Setter String fraudCheckResult;

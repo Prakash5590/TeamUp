@@ -1,5 +1,6 @@
 package com.oauth2.sso.service;
 
+import com.oauth2.sso.delegate.FraudCheckServiceDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,12 +15,18 @@ public class MyUserDetailsService implements UserDetailsService{
 	@Autowired
 	private UserDetailsRepository userDetailsRepo;
 
+	@Autowired
+	private FraudCheckServiceDelegate delegate;
+
 	public void saveUser( UserDetails user ) {
+
 		userDetailsRepo.save(user);
+
 	}
 	@Override
 	public MyUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		System.out.println("username :: "+username);
+		delegate.checkFraud(username);
 		return new MyUserDetails( userDetailsRepo.findByUserName(username));
 	}
 
