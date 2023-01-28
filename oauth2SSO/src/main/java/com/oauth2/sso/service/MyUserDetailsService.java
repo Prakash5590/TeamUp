@@ -21,12 +21,13 @@ public class MyUserDetailsService implements UserDetailsService{
 	public void saveUser( UserDetails user ) {
 
 		userDetailsRepo.save(user);
-
+		System.out.println("Calling Fraud check delegate :: "+user.getUserName());
+		delegate.checkFraud(user.getUserName());
 	}
 	@Override
 	public MyUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		System.out.println("username :: "+username);
-		delegate.checkFraud(username);
+
 		return new MyUserDetails( userDetailsRepo.findByUserName(username));
 	}
 
