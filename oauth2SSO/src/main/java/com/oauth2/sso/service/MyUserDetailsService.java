@@ -4,6 +4,7 @@ import com.oauth2.sso.delegate.FraudCheckServiceDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.oauth2.sso.dao.UserDetailsRepository;
@@ -18,11 +19,15 @@ public class MyUserDetailsService implements UserDetailsService{
 	@Autowired
 	private FraudCheckServiceDelegate delegate;
 
-	public void saveUser( UserDetails user ) {
+	//@Autowired
+	//private BCryptPasswordEncoder pwdEncoder;
 
-		userDetailsRepo.save(user);
+	public void saveUser( UserDetails user ) {
 		System.out.println("Calling Fraud check delegate :: "+user.getUserName());
 		delegate.checkFraud(user.getUserName());
+		//user.setPassword(pwdEncoder.encode(user.getPassword()));
+		userDetailsRepo.save(user);
+
 	}
 	@Override
 	public MyUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

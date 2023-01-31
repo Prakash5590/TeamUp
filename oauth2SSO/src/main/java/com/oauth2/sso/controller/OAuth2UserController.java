@@ -1,11 +1,17 @@
 package com.oauth2.sso.controller;
 
+import com.oauth2.sso.dto.JwtTokenResponse;
+import com.oauth2.sso.dto.UserloginDetails;
+import com.oauth2.sso.service.JWTTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +35,11 @@ public class OAuth2UserController {
 	private MyUserDetailsService userService;
 	@Autowired 
 	private PasswordEncoder encoder;
-	
+
+	@Autowired
+	private JWTTokenService jwtTokenService;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	//@PreAuthorize("permitAll")
 	public ResponseEntity<String> createNewUser(@RequestBody UserDetails user) {
@@ -61,5 +71,19 @@ public class OAuth2UserController {
 		ResponseEntity<String> response = ResponseEntity.ok("User deleted successfully.");
 		//delete user
 		return response;
+	}
+
+	@PostMapping(value = "/getToken")
+	public ResponseEntity<JwtTokenResponse> getToken(@RequestBody UserloginDetails userloginDetails){
+		System.out.println("----->"+userloginDetails);
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(
+						userloginDetails.getUserName()
+						, userloginDetails.getPassword()));
+		if(authentication.isAuthenticated()){
+			return ResponseEntity.ok(jwtTokenService.generateToken(userloginDetails.getUserName()));
+		}else {
+			return ResponseEntity.ok(new JwtTokenResponse(null,"Login Unsuccessful"));
+		}
 	}
 }
