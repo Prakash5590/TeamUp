@@ -3,10 +3,10 @@ package com.oauth2.sso.controller;
 import com.oauth2.sso.dto.JwtTokenResponse;
 import com.oauth2.sso.dto.UserloginDetails;
 import com.oauth2.sso.service.JWTTokenService;
+import jakarta.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +25,8 @@ import com.oauth2.sso.service.MyUserDetailsService;
 import com.oauth2.sso.users.entity.MyUserDetails;
 import com.oauth2.sso.users.entity.UserDetails;
 
+import java.text.MessageFormat;
+
 @RestController
 @RequestMapping("/api/user")
 public class OAuth2UserController {
@@ -40,7 +42,7 @@ public class OAuth2UserController {
 	private JWTTokenService jwtTokenService;
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON,produces = MediaType.APPLICATION_JSON)
 	//@PreAuthorize("permitAll")
 	public ResponseEntity<String> createNewUser(@RequestBody UserDetails user) {
 		LOGGER.info("------>{}", user);
@@ -73,7 +75,7 @@ public class OAuth2UserController {
 		return response;
 	}
 
-	@PostMapping(value = "/getToken")
+	@PostMapping(value = "/getToken", produces = MediaType.APPLICATION_JSON)
 	public ResponseEntity<JwtTokenResponse> getToken(@RequestBody UserloginDetails userloginDetails){
 		System.out.println("----->"+userloginDetails);
 		Authentication authentication = authenticationManager.authenticate(

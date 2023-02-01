@@ -1,13 +1,13 @@
 package com.oauth2.sso.service;
 
 import com.oauth2.sso.dto.JwtTokenResponse;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.Base64Codec;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,29 @@ public class JWTTokenService {
         System.out.println("----->"+tok);
         return tok;
     }
+    private Claims extractClaimsFromToken( String token ){
+        return Jwts.parser()
+                .setSigningKey(getSecretKey())
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
+    private boolean isTokenExpired( String token){
+        return extractClaimsFromToken(token).getExpiration().before(new Date());
+    }
+
+    public boolean isValidToken(String token, UserDetails userDetails){
+        String tokenUser = getUserNameFromToken(token);
+        return tokenUser !=null
+                && userDetails != null
+                && tokenUser.equalsIgnoreCase(userDetails.getUsername())
+                && isTokenExpired(token);
+
+    }
+
+    public String getUserNameFromToken(String token){
+        return extractClaimsFromToken(token).getSubject();
+    }
     private byte[] getSecretKey() {
         return Base64Codec.BASE64.decode(secret);
     }
