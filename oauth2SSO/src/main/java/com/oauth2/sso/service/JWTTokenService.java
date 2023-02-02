@@ -16,7 +16,7 @@ import java.util.Map;
 public class JWTTokenService {
 
     private final String secret = "n2r5u8x!A%D*G-KaPdSgVkYp3s6v9y$B?E(H+MbQeThWmZq4t7w!z%C*F)J@NcRf";
-    private final long expiry = 5*60*1000;    //Expires in 5 minute
+    private final long expiry = 15*60*1000;    //Expires in 5 minute
     public JwtTokenResponse generateToken( String userName ){
         Map<String, Object> claims = new HashMap<>();
         return new JwtTokenResponse(createToken(claims, userName), "Login Successful and Token generate.");
@@ -40,7 +40,10 @@ public class JWTTokenService {
     }
 
     private boolean isTokenExpired( String token){
-        return extractClaimsFromToken(token).getExpiration().before(new Date());
+        Date exp = extractClaimsFromToken(token).getExpiration();
+        System.out.println("exp --> "+exp);
+        System.out.println("cur --> "+new Date());
+        return exp.after(new Date());
     }
 
     public boolean isValidToken(String token, UserDetails userDetails){
